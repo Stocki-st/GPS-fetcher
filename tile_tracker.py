@@ -4,7 +4,7 @@ import asyncio
 import ssl
 from cryptography.fernet import Fernet
 from pytile.errors import TileError
-from aiohttp import ClientSession
+from aiohttp import ClientSession, TCPConnector
 from pytile import async_login
 
 def decrypt_password():
@@ -45,20 +45,23 @@ def save_location(tile_name, latitude, longitude, timestamp):
 
 async def fetch_tile_locations():
     try:
-        async with ClientSession() as session:
+        async with ClientSession(connector=TCPConnector(ssl=False)) as session:
             api = await async_login(TILE_USERNAME, TILE_PASSWORD, session)
 
             tiles = await api.async_get_tiles()
 
             for tile_uuid, tile in tiles.items():
-                if tile.is_active:  # Only consider active tiles
-                    tile_name = tile.name
-                    latitude = tile.last_tile_state.latitude
-                    longitude = tile.last_tile_state.longitude
-                    timestamp = tile.last_tile_state.timestamp
+               # print("#tile: ", tile)
+               # print("#name: ", tile.name)
+               # members = dir(tile)
+               # print(members)
+                tile_name = tile.name
+                latitude = tile.latitude
+                longitude = tile.longitude
+                timestamp = tile.last_timestamp
 
-                    print(f"Tile: {tile_name}, Lat: {latitude}, Lon: {longitude}, Time: {timestamp}")
-                    save_location(tile_name, latitude, longitude, timestamp)
+                print(f"Tile: {tile_name}, Lat: {latitude}, Lon: {longitude}, Time: {timestamp}")
+                save_location(tile_name, latitude, longitude, timestamp)
     except TileError as e:
         print(f"Error fetching Tile data: {e}")
 
@@ -70,7 +73,7 @@ async def main():
         print("Get tracker locations...")
         await fetch_tile_locations()
         print("Wait 10 minutes...")
-        await asyncio.sleep(600)  # Use asyncio.sleep instead of time.sleep
+        await asyncio.sleep(600)
 
 if __name__ == "__main__":
     asyncio.run(main())
