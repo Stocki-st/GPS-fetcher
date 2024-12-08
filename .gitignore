@@ -1,0 +1,32 @@
+# Config and sensitive files
+config.py
+
+# Python cache and temporary files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment files
+.env
+.env.*
+
+# Byte-compiled files
+*.pyc
+
+# Virtual environments
+venv/
+env/
+
+# Logs
+*.log
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# SQLite database files (optional, if you want to exclude them)
+*.db
+*.sqlite3
